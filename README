@@ -1,2 +1,5 @@
+Data.NibbleString holds an array of Nibbles (4-bit values), and provides an interface similar to that in Data.ByteString.
 
-See nibblestring.cabal for the description of this package.  There are also haddock docs.
+Although similar to Bytestring, there are obvious differences.  The "length" of a nibblestring will be twice that of bytestring, unpacking a nibblestring will result in two items per byte, etc.
+
+Data.NibbleString is intended to be imported qualified.
