@@ -13,6 +13,16 @@ description:
     Although similar to Bytestring, there are obvious differences.  The "length" of a nibblestring will be twice that of bytestring,
     unpacking a nibblestring will result in two items per byte, etc.
     Data.NibbleString is intended to be imported qualified.
+
+source-repository head
+  type:     git
+  location: https://github.com/jamshidh/nibblestring
+
+source-repository this
+  type:     git
+  location: https://github.com/jamshidh/nibblestring
+  branch:   master
+  tag:      v0.0.2
  
 library
     default-language: Haskell98
