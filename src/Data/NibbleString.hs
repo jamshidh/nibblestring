@@ -38,6 +38,7 @@ import qualified Data.ByteString.Char8 as BC
 import Data.String
 import Data.Word
 import Numeric
+import Text.PrettyPrint.ANSI.Leijen hiding ((<$>), empty)
 
 -- | Nibbles are stored as the low four bits of a Word8.
 --
@@ -48,6 +49,12 @@ type Nibble = Word8
 --
 -- A 'NibbleString' is just a 'ByteString' internally, but with a spot to store the extra Nibble for odd length strings.
 data NibbleString = EvenNibbleString B.ByteString | OddNibbleString Nibble B.ByteString deriving (Show, Eq, Ord)
+
+instance Pretty NibbleString where
+  pretty (EvenNibbleString s) = blue $ text $ BC.unpack (B16.encode s)
+  pretty (OddNibbleString c s) =
+    blue $ text $ showHex c "" ++ BC.unpack (B16.encode s)
+
 
 instance IsString NibbleString where
   fromString "" = EvenNibbleString B.empty
