@@ -24,17 +24,20 @@ module Data.NibbleString (
   isPrefixOf,
   head,
   tail,
+  cons,
+  take,
   drop,
   append
   ) where
 
-import Prelude hiding (head, tail, length, drop, null)
+import Prelude hiding (head, tail, length, take, cons, drop, null)
 import qualified Prelude
 
 import Data.Bits
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Base16 as B16
 import qualified Data.ByteString.Char8 as BC
+import qualified Data.List as L (take)
 import Data.String
 import Data.Word
 import Numeric
@@ -156,6 +159,13 @@ isPrefixOf (EvenNibbleString s1) (OddNibbleString c2 s2) = c1 == c2 && OddNibble
     where
       c1 = B.head s1 `shiftR` 4
 
+-- | /O(n)/ @cons n s@ returns a new 'NibbleString' by prepending n to the given 'NibbleString'.
+--
+-- For $s$ of even length, the operation occurs in /O(1)/, however for odd length, the underlying bytearray needs to be copied.
+cons::Nibble->NibbleString->NibbleString
+cons n (EvenNibbleString s) = OddNibbleString n s
+cons n1 (OddNibbleString n2 s) = EvenNibbleString ((n1 `shiftL` 4 + n2) `B.cons` s)
+
 
 -- | /O(1)/ @drop n@ returns a new 'NibbleString' by dropping the first n Nibbles from the given 'NibbleString'.
 drop::Int->NibbleString->NibbleString
@@ -166,3 +176,19 @@ drop 1 s = tail s
 drop n (EvenNibbleString s) = drop 1 $ EvenNibbleString (B.drop ((n - 1) `shiftR` 1) s)
 drop n (OddNibbleString _ s) | even n = drop (n-1) $ EvenNibbleString s
 drop n (OddNibbleString _ s) = drop (n - 1) $ EvenNibbleString s
+
+-- | /O(n)/ @take n@ returns a new 'NibbleString' by dropping the first n Nibbles from the given 'NibbleString'.
+--
+-- Note- Although this works similarly to the ByteString version of take, although it runs at (worst case) in O(n).
+-- The reason for this, is, because if the even-odd nibbles are misaligned after the take, the whole array needs to
+-- be copied to shift things over correctly.
+take::Int->NibbleString->NibbleString
+--Fast /O(1)/ stuff
+take 0 s = empty
+take 1 s = singleton $ head s
+take n s | n > length s = s
+take n (EvenNibbleString s) | even n = EvenNibbleString (B.take (n `shiftR` 1) s)
+take n (OddNibbleString c s) | odd n = OddNibbleString c (B.take ((n-1) `shiftR` 1) s)
+--Slow /O(n)/ stuff
+take n s = pack $ L.take n $ unpack s
+
