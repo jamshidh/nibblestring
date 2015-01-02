@@ -30,7 +30,7 @@ module Data.NibbleString (
   append
   ) where
 
-import Prelude hiding (head, tail, length, take, cons, drop, null)
+import Prelude hiding (head, tail, length, take, drop, null)
 import qualified Prelude
 
 import Data.Bits
@@ -179,12 +179,12 @@ drop n (OddNibbleString _ s) = drop (n - 1) $ EvenNibbleString s
 
 -- | /O(n)/ @take n@ returns a new 'NibbleString' by dropping the first n Nibbles from the given 'NibbleString'.
 --
--- Note- Although this works similarly to the ByteString version of take, although it runs at (worst case) in O(n).
+-- Note- This works similarly to the ByteString version of take, although it runs at (worst case) in O(n).
 -- The reason for this, is, because if the even-odd nibbles are misaligned after the take, the whole array needs to
 -- be copied to shift things over correctly.
 take::Int->NibbleString->NibbleString
 --Fast /O(1)/ stuff
-take 0 s = empty
+take 0 _ = empty
 take 1 s = singleton $ head s
 take n s | n > length s = s
 take n (EvenNibbleString s) | even n = EvenNibbleString (B.take (n `shiftR` 1) s)
