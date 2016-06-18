@@ -49,3 +49,4 @@ Test-Suite test-nibblestring
                     , test-framework-hunit
                     , HUnit
                     , containers
+                    , ansi-wl-pprint
